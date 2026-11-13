@@ -54,4 +54,6 @@ mkdirSync(join(dist, "types/esm"), { recursive: true });
 writeFileSync(join(dist, "types/esm/package.json"), JSON.stringify({ type: "module" }) + "\n");
 writeFileSync(join(dist, "types/cjs/package.json"), JSON.stringify({ type: "commonjs" }) + "\n");
 
-console.log(`built toolpair ${pkg.version}: dist/index.mjs dist/index.cjs dist/cli.cjs dist/types/{esm,cjs}`);
+// 진행 문구는 표준 오류로 보낸다. 이 스크립트는 prepare 로도 돌고, npm 10 은 `npm pack --json` 중에도
+// prepare 를 돌려 그 표준 출력을 JSON 결과에 섞기 때문이다(0.1.2 CI 실패 원인).
+console.error(`built toolpair ${pkg.version}: dist/index.mjs dist/index.cjs dist/cli.cjs dist/types/{esm,cjs}`);

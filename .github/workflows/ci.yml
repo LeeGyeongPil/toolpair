@@ -15,7 +15,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [20, 22]
+        # 20·22 는 npm 10, 24 는 npm 11 을 함께 깐다 — 두 npm 메이저에서 패키징 점검(smoke:pack)을 돌린다.
+        node: [20, 22, 24]
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v7.1.0

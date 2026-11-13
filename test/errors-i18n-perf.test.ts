@@ -123,4 +123,18 @@ describe("closed output pipe (Q-7)", () => {
     assert.ok(code === 0 || code === null, `exit ${code}`);
     assert.doesNotMatch(err, /Unhandled 'error' event|EPIPE/);
   });
+
+  it("lint keeps exit code 1 when the reader closes early (like `lint big.json | head -3`)", async () => {
+    // 3000 orphan results -> a report far larger than a pipe buffer, so the write really hits a closed pipe.
+    const big: unknown[] = [{ role: "user", content: "hi" }];
+    for (let i = 0; i < 3000; i++) big.push({ role: "tool", tool_call_id: "gone" + i, content: "x" });
+    const path = file("big-orphans.json", JSON.stringify(big));
+    const child = spawn(process.execPath, [CLI, "lint", path, "--lang", "en"], { cwd: ROOT, stdio: ["ignore", "pipe", "pipe"] });
+    let err = "";
+    child.stderr.on("data", (d: Buffer) => (err += d.toString()));
+    child.stdout.destroy();
+    const code: number | null = await new Promise((resolve) => child.on("close", resolve));
+    assert.equal(code, 1, `exit ${code}, stderr: ${err}`);
+    assert.doesNotMatch(err, /Unhandled 'error' event|EPIPE|ECONNRESET/);
+  });
 });

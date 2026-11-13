@@ -3,6 +3,26 @@
 All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.1.2] - 2026-11-13
+
+### Fixed
+
+- CI: `npm run smoke:pack` failed on Node 20 and 22. Their bundled npm 10 runs the `prepare` script during `npm pack --ignore-scripts --json` and mixes its output into the JSON on stdout, so parsing it failed. The packaging check no longer parses npm's stdout: it finds the tarball on disk and lists it with `tar`, and it calls the same npm that runs the script (`npm_execpath`).
+- Build: the build progress line now goes to stderr, so `npm pack --json` output stays valid JSON with npm 10.
+- CLI: when the output reader closes early (for example `toolpair lint big.json | head -3`), the exit code is the one the command already decided (1 if lint found problems) instead of always 0.
+- Demo: a closed output pipe reported as `ECONNRESET` exits quietly like `EPIPE`.
+
+### Changed
+
+- CI runs Node 20, 22 and 24, covering both npm 10 and npm 11.
+
+### Known issues
+
+- The package is not on npm yet; install from GitHub (see the README).
+- With npm 11, running `npm pack` prints a `prepare` script warning; it is harmless.
+- Reading standard input has no regression test for the `EAGAIN` retry path, and empty input gives a generic error message.
+- The 0.1.0 known issues (Korean demo rule texts, Korean in type declarations and example comments) remain.
+
 ## [0.1.1] - 2026-11-13
 
 ### Fixed

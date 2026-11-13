@@ -284,7 +284,9 @@ export function run(argv: string[], env: Record<string, string | undefined>): nu
 // 출력을 받는 쪽이 먼저 닫혀도(예: `| head`) 스택 트레이스 없이 조용히 끝낸다.
 process.stdout.on("error", (e: NodeJS.ErrnoException) => {
   // Linux reports a reader that vanished as EPIPE or, for socket pipes, ECONNRESET.
-  if (e.code === "EPIPE" || e.code === "ECONNRESET") process.exit(0);
+  // 종료 코드는 명령이 이미 정한 값을 지킨다(lint 가 문제를 찾았으면 1) — 파이프가 일찍 닫혀도 CI 가 통과로 착각하지 않게.
+  // 쓰기 오류는 다음 틱에 오므로 이때는 run() 이 끝나 process.exitCode 가 정해져 있다.
+  if (e.code === "EPIPE" || e.code === "ECONNRESET") process.exit(typeof process.exitCode === "number" ? process.exitCode : 0);
   throw e;
 });
 
