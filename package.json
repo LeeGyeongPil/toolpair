@@ -1,0 +1,72 @@
+{
+  "name": "toolpair",
+  "version": "0.1.0",
+  "description": "Validate, repair and budget-trim LLM chat histories so tool calls and tool results stay paired (OpenAI Chat, OpenAI Responses, Anthropic, Gemini).",
+  "license": "MIT",
+  "author": "LeeGyeongPil",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeeGyeongPil/toolpair.git"
+  },
+  "homepage": "https://github.com/LeeGyeongPil/toolpair#readme",
+  "bugs": {
+    "url": "https://github.com/LeeGyeongPil/toolpair/issues"
+  },
+  "keywords": [
+    "llm",
+    "tool-calling",
+    "function-calling",
+    "chat-history",
+    "openai",
+    "anthropic",
+    "gemini",
+    "context-window",
+    "trim"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/types/cjs/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/types/esm/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/types/cjs/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "toolpair": "./dist/cli.cjs"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "README.ko.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --import tsx --test test/*.test.ts",
+    "demo": "node --import tsx examples/demo.ts",
+    "smoke:pack": "node scripts/smoke-pack.mjs",
+    "prepare": "node scripts/build.mjs"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "20.19.43",
+    "esbuild": "0.28.2",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2"
+  }
+}
