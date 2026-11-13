@@ -23,14 +23,16 @@ LLM 대화 기록을 검증·수리하고 토큰 예산에 맞춰 자르면서, 
 
 ## 설치
 
-```bash
-npm install toolpair
-```
-
-또는 GitHub에서 바로(`prepare` 스크립트가 `dist/`를 만듭니다):
+GitHub에서 바로(지금 가능, `prepare` 스크립트가 `dist/`를 만듭니다):
 
 ```bash
 npm install github:LeeGyeongPil/toolpair
+```
+
+npm 레지스트리에 게시된 뒤에는:
+
+```bash
+npm install toolpair
 ```
 
 Node.js 20 이상이 필요합니다(`brew install node` 또는 `nvm install 20`, 최소 리눅스 이미지에서는 Node.js와 `git`을 설치). 핵심 기능은 브라우저에서도 동작합니다. 런타임 의존성은 없습니다.
@@ -258,7 +260,7 @@ toolpair의 차이는 원시 제공자 형식 4종을 한 규칙 체계로 다�
 ## 버전·호환성
 
 - [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 따릅니다. 0.x 동안은 마이너 버전에서 API가 바뀔 수 있고, 바뀌면 [CHANGELOG.md](CHANGELOG.md)에 적습니다.
-- 현재 버전: 0.1.0. Node.js 20 이상; CI 워크플로가 Node 20과 22를 돌립니다.
+- 현재 버전: 0.1.1. Node.js 20 이상; CI 워크플로가 Node 20과 22를 돌립니다.
 
 ## 개발
 

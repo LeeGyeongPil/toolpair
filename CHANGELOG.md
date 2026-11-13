@@ -3,6 +3,21 @@
 All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] - 2026-11-13
+
+### Fixed
+
+- CLI: reading standard input (`-`) no longer depends on `readFileSync(0)`, which can fail with `EAGAIN`/`EOF` on Linux when stdin is a non-blocking pipe; it now reads in a loop and retries.
+- CLI: a closed output pipe reported as `ECONNRESET` (Linux socket pipes) now exits quietly like `EPIPE`.
+- CI: the workflow now has least-privilege `permissions` and a job `timeout-minutes`.
+
+### Known issues
+
+- No regression test for the stdin `EAGAIN` retry path.
+- Empty standard input gives a generic error message.
+- If the output pipe closes early, `lint` can still exit 0 even when it found errors.
+- The 0.1.0 known issues (Korean demo rule texts, Korean in type declarations and example comments) remain.
+
 ## [0.1.0] - 2026-11-13
 
 First release.

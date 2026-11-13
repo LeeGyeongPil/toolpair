@@ -23,14 +23,16 @@ A provider answers with HTTP 400 when a tool call and its result do not line up.
 
 ## Install
 
-```bash
-npm install toolpair
-```
-
-Or straight from GitHub (the `prepare` script builds `dist/`):
+From GitHub (works now; the `prepare` script builds `dist/`):
 
 ```bash
 npm install github:LeeGyeongPil/toolpair
+```
+
+From the npm registry, once the package is published there:
+
+```bash
+npm install toolpair
 ```
 
 Requires Node.js 20+ (`brew install node`, or `nvm install 20`; on a minimal Linux image install Node.js and `git`). The core also runs in browsers. There are no runtime dependencies.
@@ -258,7 +260,7 @@ Limits: toolpair only looks at the local array. It does not recover thought sign
 ## Versions and compatibility
 
 - Follows [Semantic Versioning](https://semver.org/). While 0.x, minor versions may change the API; changes are listed in [CHANGELOG.md](CHANGELOG.md).
-- Current version: 0.1.0. Node.js 20+; the CI workflow runs Node 20 and 22.
+- Current version: 0.1.1. Node.js 20+; the CI workflow runs Node 20 and 22.
 
 ## Development
 

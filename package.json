@@ -1,6 +1,6 @@
 {
   "name": "toolpair",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Validate, repair and budget-trim LLM chat histories so tool calls and tool results stay paired (OpenAI Chat, OpenAI Responses, Anthropic, Gemini).",
   "license": "MIT",
   "author": "LeeGyeongPil",
