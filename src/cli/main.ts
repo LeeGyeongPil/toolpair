@@ -1,6 +1,6 @@
 // toolpair CLI: lint / fix / trim. 라이브러리 코어 위의 얇은 껍데기다.
 // 종료 코드: 0 정상, 1 문제 발견(lint)·수리 후에도 오류(fix), 2 사용법·입력 오류.
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, readSync, writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 import { InvalidInputError, ToolpairError, UnknownFormatError } from "../errors.js";
 import { repair } from "../repair.js";
@@ -53,12 +53,36 @@ function listLength(value: unknown): number {
   return 0;
 }
 
+// Reads all of standard input synchronously. readFileSync(0) can throw EAGAIN or EOF on Linux
+// when stdin is a non-blocking pipe (common in CI runners), so read in a loop and retry.
+function readStdin(): string {
+  const chunks: Buffer[] = [];
+  const buf = Buffer.alloc(64 * 1024);
+  for (;;) {
+    let n: number;
+    try {
+      n = readSync(0, buf, 0, buf.length, null);
+    } catch (e) {
+      const code = (e as NodeJS.ErrnoException).code;
+      if (code === "EAGAIN") {
+        Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 10); // short sleep, then retry
+        continue;
+      }
+      if (code === "EOF") break;
+      throw e;
+    }
+    if (n === 0) break;
+    chunks.push(Buffer.from(buf.subarray(0, n)));
+  }
+  return Buffer.concat(chunks).toString("utf8");
+}
+
 function readInput(file: string, t: T): { data: unknown; label: string } {
   const label = file === "-" ? t("label.stdin") : file;
   let text: string;
   try {
     // "-" 는 표준 입력(파일 설명자 0).
-    text = readFileSync(file === "-" ? 0 : file, "utf8");
+    text = file === "-" ? readStdin() : readFileSync(file, "utf8");
   } catch (e) {
     throw new CliError(t("err.readFile", { file: label, detail: (e as Error).message }));
   }
@@ -259,7 +283,8 @@ export function run(argv: string[], env: Record<string, string | undefined>): nu
 
 // 출력을 받는 쪽이 먼저 닫혀도(예: `| head`) 스택 트레이스 없이 조용히 끝낸다.
 process.stdout.on("error", (e: NodeJS.ErrnoException) => {
-  if (e.code === "EPIPE") process.exit(0);
+  // Linux reports a reader that vanished as EPIPE or, for socket pipes, ECONNRESET.
+  if (e.code === "EPIPE" || e.code === "ECONNRESET") process.exit(0);
   throw e;
 });
 
