@@ -260,14 +260,14 @@ Limits: toolpair only looks at the local array. It does not recover thought sign
 ## Versions and compatibility
 
 - Follows [Semantic Versioning](https://semver.org/). While 0.x, minor versions may change the API; changes are listed in [CHANGELOG.md](CHANGELOG.md).
-- Current version: 0.1.1. Node.js 20+; the CI workflow runs Node 20 and 22.
+- Current version: 0.1.2. Node.js 20+; the CI workflow runs Node 20, 22 and 24 (npm 10 and npm 11).
 
 ## Development
 
 ```bash
 npm install
 npm run typecheck
-npm test            # builds, then runs 177 tests
+npm test            # builds, then runs 178 tests
 npm run smoke:pack  # installs the packed tarball in a temp folder and imports it
 ```
 

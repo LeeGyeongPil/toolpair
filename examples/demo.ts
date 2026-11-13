@@ -13,7 +13,8 @@ import { defaultCountTokens, repair, trimToBudget, validate, type Format, type I
 
 // 출력을 받는 쪽이 먼저 닫혀도(예: `| head`) 스택 트레이스 없이 조용히 끝낸다.
 process.stdout.on("error", (e: NodeJS.ErrnoException) => {
-  if (e.code === "EPIPE") process.exit(0);
+  // Linux 의 소켓 파이프는 읽는 쪽이 사라지면 ECONNRESET 으로 알린다(CLI 와 같은 처리).
+  if (e.code === "EPIPE" || e.code === "ECONNRESET") process.exit(0);
   throw e;
 });
 

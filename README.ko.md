@@ -260,14 +260,14 @@ toolpair의 차이는 원시 제공자 형식 4종을 한 규칙 체계로 다�
 ## 버전·호환성
 
 - [유의적 버전(SemVer)](https://semver.org/lang/ko/)을 따릅니다. 0.x 동안은 마이너 버전에서 API가 바뀔 수 있고, 바뀌면 [CHANGELOG.md](CHANGELOG.md)에 적습니다.
-- 현재 버전: 0.1.1. Node.js 20 이상; CI 워크플로가 Node 20과 22를 돌립니다.
+- 현재 버전: 0.1.2. Node.js 20 이상; CI 워크플로가 Node 20·22·24(npm 10과 npm 11)를 돌립니다.
 
 ## 개발
 
 ```bash
 npm install
 npm run typecheck
-npm test            # 빌드 후 177개 테스트 실행
+npm test            # 빌드 후 178개 테스트 실행
 npm run smoke:pack  # 묶은 tarball을 임시 폴더에 설치해 import 확인
 ```
 
