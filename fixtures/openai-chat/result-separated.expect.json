@@ -1,0 +1,9 @@
+{
+  "format": "openai-chat",
+  "issues": [
+    { "rule": "result-not-adjacent", "severity": "error", "path": "$[4]", "ids": ["call_a"] }
+  ],
+  "changes": [
+    { "op": "move-result", "path": "$[4]", "ids": ["call_a"] }
+  ]
+}

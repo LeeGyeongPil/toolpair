@@ -1,0 +1,11 @@
+[
+  { "role": "system", "content": "You are a concise travel assistant. Use tools for live data." },
+  { "role": "user", "content": "What's the weather in Seoul right now?" },
+  {
+    "role": "assistant",
+    "content": null,
+    "tool_calls": [
+      { "id": "call_a", "type": "function", "function": { "name": "get_weather", "arguments": "{\"city\":\"Seoul\"}" } }
+    ]
+  }
+]

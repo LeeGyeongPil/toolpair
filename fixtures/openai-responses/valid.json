@@ -1,0 +1,15 @@
+[
+  { "role": "developer", "content": "You are a concise travel assistant. Use tools for live data." },
+  { "role": "user", "content": "What's the weather in Seoul and Busan right now?" },
+  { "type": "reasoning", "id": "rs_1", "summary": [] },
+  { "type": "function_call", "id": "fc_1", "call_id": "call_a", "name": "get_weather", "arguments": "{\"city\":\"Seoul\"}" },
+  { "type": "function_call", "id": "fc_2", "call_id": "call_b", "name": "get_weather", "arguments": "{\"city\":\"Busan\"}" },
+  { "type": "function_call_output", "call_id": "call_a", "output": "{\"city\":\"Seoul\",\"temp_c\":12,\"sky\":\"clear\"}" },
+  { "type": "function_call_output", "call_id": "call_b", "output": "{\"city\":\"Busan\",\"temp_c\":15,\"sky\":\"cloudy\"}" },
+  { "role": "assistant", "content": "Seoul is 12C and clear; Busan is 15C and cloudy." },
+  { "role": "user", "content": "Any train from Seoul to Busan after 6 pm?" },
+  { "type": "function_call", "id": "fc_3", "call_id": "call_c", "name": "search_trains", "arguments": "{\"from\":\"Seoul\",\"to\":\"Busan\",\"after\":\"18:00\"}" },
+  { "type": "function_call_output", "call_id": "call_c", "output": "[{\"train\":\"KTX 151\",\"departs\":\"18:30\"},{\"train\":\"KTX 155\",\"departs\":\"19:00\"}]" },
+  { "role": "assistant", "content": "KTX 151 leaves at 18:30 and KTX 155 at 19:00." },
+  { "role": "user", "content": "Book the 18:30 one, please." }
+]

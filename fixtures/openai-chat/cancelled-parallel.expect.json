@@ -1,0 +1,10 @@
+{
+  "format": "openai-chat",
+  "issues": [
+    { "rule": "missing-result", "severity": "error", "path": "$[2]", "ids": ["call_a", "call_b"] }
+  ],
+  "changes": [
+    { "op": "insert-synthetic-result", "path": "$[2].tool_calls[0]", "ids": ["call_a"] },
+    { "op": "insert-synthetic-result", "path": "$[2].tool_calls[1]", "ids": ["call_b"] }
+  ]
+}

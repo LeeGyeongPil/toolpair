@@ -1,0 +1,15 @@
+[
+  { "role": "user", "parts": [{ "text": "What's the weather in Seoul and Busan right now?" }] },
+  {
+    "role": "model",
+    "parts": [
+      { "functionCall": { "name": "get_weather", "args": { "city": "Seoul" } } },
+      { "functionCall": { "name": "get_weather", "args": { "city": "Busan" } } }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [{ "functionResponse": { "name": "get_weather", "response": { "output": { "city": "Seoul", "temp_c": 12, "sky": "clear" } } } }]
+  },
+  { "role": "model", "parts": [{ "text": "Seoul is 12C and clear." }] }
+]

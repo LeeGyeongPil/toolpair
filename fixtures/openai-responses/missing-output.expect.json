@@ -1,0 +1,9 @@
+{
+  "format": "openai-responses",
+  "issues": [
+    { "rule": "missing-result", "severity": "error", "path": "$[2]", "ids": ["call_a"] }
+  ],
+  "changes": [
+    { "op": "insert-synthetic-result", "path": "$[2]", "ids": ["call_a"] }
+  ]
+}

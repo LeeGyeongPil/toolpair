@@ -1,0 +1,9 @@
+{
+  "format": "openai-chat",
+  "issues": [
+    { "rule": "empty-message", "severity": "error", "path": "$[4]", "ids": [] }
+  ],
+  "changes": [
+    { "op": "drop-empty-message", "path": "$[4]", "ids": [] }
+  ]
+}

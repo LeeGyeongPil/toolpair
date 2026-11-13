@@ -1,0 +1,6 @@
+[
+  { "role": "user", "content": "What's the weather in Seoul right now?" },
+  { "type": "reasoning", "id": "rs_1", "summary": [] },
+  { "type": "function_call", "id": "fc_1", "call_id": "call_a", "name": "get_weather", "arguments": "{\"city\":\"Seoul\"}" },
+  { "role": "user", "content": "Skip it, just say hi." }
+]

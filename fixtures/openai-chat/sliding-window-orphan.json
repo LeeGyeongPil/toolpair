@@ -1,0 +1,7 @@
+[
+  { "role": "system", "content": "You are a concise travel assistant. Use tools for live data." },
+  { "role": "tool", "tool_call_id": "call_a", "content": "{\"city\":\"Seoul\",\"temp_c\":12,\"sky\":\"clear\"}" },
+  { "role": "tool", "tool_call_id": "call_b", "content": "{\"city\":\"Busan\",\"temp_c\":15,\"sky\":\"cloudy\"}" },
+  { "role": "assistant", "content": "Seoul is 12C and clear; Busan is 15C and cloudy." },
+  { "role": "user", "content": "Thanks! What about tomorrow?" }
+]

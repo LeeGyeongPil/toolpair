@@ -1,0 +1,13 @@
+[
+  { "role": "user", "content": "Plan a day trip to Busan for tomorrow." },
+  {
+    "role": "assistant",
+    "content": [{ "type": "thinking", "thinking": "I should check the weather first.", "signature": "sig-example-not-real" }]
+  },
+  {
+    "role": "user",
+    "content": [{ "type": "tool_result", "tool_use_id": "toolu_9", "content": "{\"city\":\"Busan\",\"temp_c\":15,\"sky\":\"cloudy\"}" }]
+  },
+  { "role": "assistant", "content": [{ "type": "text", "text": "Busan will be 15C and cloudy, so start with the indoor aquarium." }] },
+  { "role": "user", "content": "Thanks!" }
+]

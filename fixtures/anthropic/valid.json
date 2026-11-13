@@ -1,0 +1,39 @@
+{
+  "max_tokens": 1024,
+  "system": "You are a concise travel assistant. Use tools for live data.",
+  "messages": [
+    { "role": "user", "content": "What's the weather in Seoul and Busan right now?" },
+    {
+      "role": "assistant",
+      "content": [
+        { "type": "text", "text": "Let me check both cities." },
+        { "type": "tool_use", "id": "toolu_a", "name": "get_weather", "input": { "city": "Seoul" } },
+        { "type": "tool_use", "id": "toolu_b", "name": "get_weather", "input": { "city": "Busan" } }
+      ]
+    },
+    {
+      "role": "user",
+      "content": [
+        { "type": "tool_result", "tool_use_id": "toolu_a", "content": "{\"city\":\"Seoul\",\"temp_c\":12,\"sky\":\"clear\"}" },
+        { "type": "tool_result", "tool_use_id": "toolu_b", "content": "{\"city\":\"Busan\",\"temp_c\":15,\"sky\":\"cloudy\"}" }
+      ]
+    },
+    { "role": "assistant", "content": [{ "type": "text", "text": "Seoul is 12C and clear; Busan is 15C and cloudy." }] },
+    { "role": "user", "content": "Any train from Seoul to Busan after 6 pm?" },
+    {
+      "role": "assistant",
+      "content": [
+        { "type": "tool_use", "id": "toolu_c", "name": "search_trains", "input": { "from": "Seoul", "to": "Busan", "after": "18:00" } }
+      ]
+    },
+    {
+      "role": "user",
+      "content": [
+        { "type": "tool_result", "tool_use_id": "toolu_c", "content": "[{\"train\":\"KTX 151\",\"departs\":\"18:30\"},{\"train\":\"KTX 155\",\"departs\":\"19:00\"}]" },
+        { "type": "text", "text": "Prefer the earliest one." }
+      ]
+    },
+    { "role": "assistant", "content": [{ "type": "text", "text": "KTX 151 leaves at 18:30." }] },
+    { "role": "user", "content": "Book it, please." }
+  ]
+}

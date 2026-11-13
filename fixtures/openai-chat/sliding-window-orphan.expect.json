@@ -1,0 +1,11 @@
+{
+  "format": "openai-chat",
+  "issues": [
+    { "rule": "orphan-result", "severity": "error", "path": "$[1]", "ids": ["call_a"] },
+    { "rule": "orphan-result", "severity": "error", "path": "$[2]", "ids": ["call_b"] }
+  ],
+  "changes": [
+    { "op": "drop-orphan-result", "path": "$[1]", "ids": ["call_a"] },
+    { "op": "drop-orphan-result", "path": "$[2]", "ids": ["call_b"] }
+  ]
+}

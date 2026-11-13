@@ -1,0 +1,9 @@
+{
+  "format": "openai-responses",
+  "issues": [
+    { "rule": "orphan-result", "severity": "error", "path": "$[1]", "ids": ["call_a"] }
+  ],
+  "changes": [
+    { "op": "drop-orphan-result", "path": "$[1]", "ids": ["call_a"] }
+  ]
+}

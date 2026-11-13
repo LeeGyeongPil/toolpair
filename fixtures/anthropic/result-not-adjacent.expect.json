@@ -1,0 +1,10 @@
+{
+  "format": "anthropic",
+  "issues": [
+    { "rule": "result-not-adjacent", "severity": "error", "path": "$[3].content[0]", "ids": ["toolu_a"] }
+  ],
+  "changes": [
+    { "op": "move-result", "path": "$[3].content[0]", "ids": ["toolu_a"] },
+    { "op": "drop-empty-message", "path": "$[3]", "ids": [] }
+  ]
+}

@@ -1,0 +1,17 @@
+[
+  { "role": "user", "content": "What's the weather in Seoul right now?" },
+  {
+    "role": "assistant",
+    "content": [
+      { "type": "text", "text": "Checking." },
+      { "type": "tool_use", "id": "toolu_a", "name": "get_weather", "input": { "city": "Seoul" } }
+    ]
+  },
+  {
+    "role": "user",
+    "content": [
+      { "type": "text", "text": "Here is the result:" },
+      { "type": "tool_result", "tool_use_id": "toolu_a", "content": "{\"city\":\"Seoul\",\"temp_c\":12,\"sky\":\"clear\"}" }
+    ]
+  }
+]

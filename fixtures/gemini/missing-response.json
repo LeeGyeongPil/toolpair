@@ -1,0 +1,5 @@
+[
+  { "role": "user", "parts": [{ "text": "What's the weather in Seoul right now?" }] },
+  { "role": "model", "parts": [{ "functionCall": { "name": "get_weather", "args": { "city": "Seoul" } } }] },
+  { "role": "user", "parts": [{ "text": "Never mind. Tell me a fun fact about Seoul instead." }] }
+]

@@ -1,0 +1,34 @@
+{
+  "systemInstruction": { "parts": [{ "text": "You are a concise travel assistant. Use tools for live data." }] },
+  "contents": [
+    { "role": "user", "parts": [{ "text": "What's the weather in Seoul and Busan right now?" }] },
+    {
+      "role": "model",
+      "parts": [
+        { "functionCall": { "name": "get_weather", "args": { "city": "Seoul" } } },
+        { "functionCall": { "name": "get_weather", "args": { "city": "Busan" } } }
+      ]
+    },
+    {
+      "role": "user",
+      "parts": [
+        { "functionResponse": { "name": "get_weather", "response": { "output": { "city": "Seoul", "temp_c": 12, "sky": "clear" } } } },
+        { "functionResponse": { "name": "get_weather", "response": { "output": { "city": "Busan", "temp_c": 15, "sky": "cloudy" } } } }
+      ]
+    },
+    { "role": "model", "parts": [{ "text": "Seoul is 12C and clear; Busan is 15C and cloudy." }] },
+    { "role": "user", "parts": [{ "text": "Any train from Seoul to Busan after 6 pm?" }] },
+    {
+      "role": "model",
+      "parts": [{ "functionCall": { "name": "search_trains", "args": { "from": "Seoul", "to": "Busan", "after": "18:00" } } }]
+    },
+    {
+      "role": "user",
+      "parts": [
+        { "functionResponse": { "name": "search_trains", "response": { "output": [{ "train": "KTX 151", "departs": "18:30" }, { "train": "KTX 155", "departs": "19:00" }] } } }
+      ]
+    },
+    { "role": "model", "parts": [{ "text": "KTX 151 leaves at 18:30 and KTX 155 at 19:00." }] },
+    { "role": "user", "parts": [{ "text": "Book the 18:30 one, please." }] }
+  ]
+}

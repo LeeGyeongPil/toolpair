@@ -1,0 +1,9 @@
+{
+  "format": "anthropic",
+  "issues": [
+    { "rule": "result-not-first", "severity": "error", "path": "$[2].content[1]", "ids": ["toolu_a"] }
+  ],
+  "changes": [
+    { "op": "move-result", "path": "$[2].content[1]", "ids": ["toolu_a"] }
+  ]
+}

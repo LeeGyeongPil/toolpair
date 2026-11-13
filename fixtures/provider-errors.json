@@ -1,0 +1,65 @@
+{
+  "_about": "Practice mock data. What a provider says when it receives a history that breaks a rule. kind=error is an error text copied from the cited page; kind=rule is the documented rule (no verbatim error text was found). toolpair never calls these APIs.",
+  "checked": "2026-11-13",
+  "openai-chat": {
+    "orphan-result": {
+      "kind": "error",
+      "status": 400,
+      "text": "Invalid parameter: messages with role 'tool' must be a response to a preceeding message with 'tool_calls'.",
+      "source": "https://github.com/microsoft/autogen/issues/3536"
+    },
+    "missing-result": {
+      "kind": "rule",
+      "text": "An assistant message with tool_calls must be followed by tool messages responding to each tool_call_id.",
+      "source": "https://docs.langchain.com/oss/javascript/langchain/errors/INVALID_TOOL_RESULTS"
+    }
+  },
+  "openai-responses": {
+    "missing-result": {
+      "kind": "error",
+      "status": 400,
+      "text": "No tool output found for function call call_a.",
+      "source": "https://community.openai.com/t/need-help-no-tool-output-found-for-function-call-error-after-function-call-in-responses-api/1245970"
+    },
+    "orphan-result": {
+      "kind": "error",
+      "status": 400,
+      "text": "No tool call found for function call output with call_id call_a.",
+      "source": "https://community.openai.com/t/issue-with-new-responses-api-400-no-tool-call-found-for-function-call-output-with-call-id/1142327"
+    }
+  },
+  "anthropic": {
+    "result-not-adjacent": {
+      "kind": "error",
+      "text": "tool_use ids were found without tool_result blocks immediately after",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"
+    },
+    "missing-result": {
+      "kind": "error",
+      "text": "tool_use ids were found without tool_result blocks immediately after",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"
+    },
+    "result-not-first": {
+      "kind": "rule",
+      "text": "In the user message containing tool results, the tool_result blocks must come FIRST in the content array. Any text must come AFTER all tool results.",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"
+    },
+    "orphan-result": {
+      "kind": "error",
+      "text": "unexpected tool_use_id found in tool_result blocks: toolu_9. Each tool_result block must have a corresponding tool_use block in the previous message.",
+      "source": "https://github.com/AstrBotDevs/AstrBot/pull/8350"
+    }
+  },
+  "gemini": {
+    "orphan-result": {
+      "kind": "error",
+      "text": "Please ensure that function response turn comes immediately after a function call turn",
+      "source": "https://discuss.ai.google.dev/t/gemini-api-tool-calling-constraint-is-breaking-workflows-and-driving-users-to-competitors/184406"
+    },
+    "missing-result": {
+      "kind": "rule",
+      "text": "A function call turn must be followed by a function response turn that answers every functionCall part (community reports; the exact error text varies).",
+      "source": "https://discuss.ai.google.dev/t/about-the-gemini-api-400-please-ensure-that-function-call-turns-come-immediately-after-a-user-turn-or-after-a-function-response-turn-error/46213"
+    }
+  }
+}

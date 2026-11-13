@@ -1,0 +1,12 @@
+{
+  "format": "anthropic",
+  "issues": [
+    { "rule": "empty-message", "severity": "error", "path": "$[1]", "ids": [] },
+    { "rule": "orphan-result", "severity": "error", "path": "$[2].content[0]", "ids": ["toolu_9"] }
+  ],
+  "changes": [
+    { "op": "drop-orphan-result", "path": "$[2].content[0]", "ids": ["toolu_9"] },
+    { "op": "drop-empty-message", "path": "$[1]", "ids": [] },
+    { "op": "drop-empty-message", "path": "$[2]", "ids": [] }
+  ]
+}

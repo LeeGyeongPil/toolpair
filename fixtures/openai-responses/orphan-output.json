@@ -1,0 +1,6 @@
+[
+  { "role": "developer", "content": "You are a concise travel assistant. Use tools for live data." },
+  { "type": "function_call_output", "call_id": "call_a", "output": "{\"city\":\"Seoul\",\"temp_c\":12,\"sky\":\"clear\"}" },
+  { "role": "assistant", "content": "Seoul is 12C and clear." },
+  { "role": "user", "content": "Thanks! What about tomorrow?" }
+]

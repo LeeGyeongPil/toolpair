@@ -1,0 +1,9 @@
+{
+  "format": "gemini",
+  "issues": [
+    { "rule": "missing-result", "severity": "error", "path": "$[1]", "ids": ["get_weather@1.1"] }
+  ],
+  "changes": [
+    { "op": "insert-synthetic-result", "path": "$[1].parts[1]", "ids": ["get_weather@1.1"] }
+  ]
+}

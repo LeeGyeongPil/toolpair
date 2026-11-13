@@ -1,0 +1,7 @@
+{
+  "format": "openai-chat",
+  "issues": [
+    { "rule": "open-call-at-end", "severity": "warning", "path": "$[2]", "ids": ["call_a"] }
+  ],
+  "changes": []
+}
