@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-11-24
+
 ### Changed
 
 - Docs: the README now installs from npm by default; 0.1.2 is on npm (published 2026-11-14). Installing from GitHub remains documented as an alternative for the latest source.
