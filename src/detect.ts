@@ -1,10 +1,10 @@
-// 형식 판별: 요청 본문 객체의 키를 먼저 보고, 그다음 항목 모양을 본다.
-// 도구 내용이 하나도 없는 대화는 어느 형식으로 봐도 이슈가 0건이므로 애매하면 openai-chat 으로 보고한다.
+// Format detection: look at the keys of the request body object first, then at the shape of the items.
+// A conversation with no tool content has 0 issues in any format, so when ambiguous it is reported as openai-chat.
 import { InvalidInputError, UnknownFormatError } from "./errors.js";
 import type { Format } from "./types.js";
 import { isObject } from "./util.js";
 
-// Responses API 의 input 항목 type 값(메시지 외).
+// Item type values of the Responses API input (other than messages).
 const RESPONSES_ITEM_TYPES = new Set([
   "function_call",
   "function_call_output",
@@ -25,13 +25,13 @@ const RESPONSES_ITEM_TYPES = new Set([
   "mcp_approval_request",
   "mcp_approval_response",
 ]);
-// Responses 메시지의 content 블록 type 값.
-// ("refusal" 은 Chat Completions 에도 있어 신호로 쓰지 않는다.)
+// Content block type values of Responses messages.
+// ("refusal" also exists in Chat Completions, so it is not used as a signal.)
 const RESPONSES_BLOCK_TYPES = new Set(["input_text", "output_text", "input_image", "input_file"]);
-// Anthropic content 블록 가운데 다른 형식에는 없는 type 값.
+// Anthropic content block type values that exist in no other format.
 const ANTHROPIC_BLOCK_TYPES = new Set(["tool_use", "tool_result", "thinking", "redacted_thinking", "document"]);
 
-/** 항목 하나가 가리키는 형식 신호. 신호가 없으면 null(역할만 있는 평범한 메시지). */
+/** The format signal one item points to. null if there is none (a plain message with only a role). */
 function signalOf(item: Record<string, unknown>): Format | null {
   if (Array.isArray(item.parts) || item.role === "model") return "gemini";
   if (typeof item.type === "string" && RESPONSES_ITEM_TYPES.has(item.type)) return "openai-responses";
@@ -46,7 +46,7 @@ function signalOf(item: Record<string, unknown>): Format | null {
   return null;
 }
 
-/** 배열 항목들로 형식을 정한다. hint 는 본문 객체에서 얻은 약한 단서(Anthropic 의 최상위 system). */
+/** Decides the format from the array items. hint is a weak clue from the body object (Anthropic's top-level system). */
 function detectList(items: unknown[], hint: Format | null): Format {
   const found = new Set<Format>();
   items.forEach((item, i) => {
@@ -64,8 +64,8 @@ function detectList(items: unknown[], hint: Format | null): Format {
 }
 
 /**
- * 대화 배열 또는 요청 본문 객체({messages}·{input}·{contents})의 형식을 판별한다.
- * 배열·객체가 아니면 InvalidInputError, 알아볼 수 없는 모양이면 UnknownFormatError.
+ * Detects the format of a conversation array or a request body object ({messages}, {input}, {contents}).
+ * Throws InvalidInputError if it is not an array or object, UnknownFormatError if the shape is unrecognizable.
  */
 export function detectFormat(input: unknown): Format {
   if (Array.isArray(input)) return detectList(input, null);
@@ -75,7 +75,7 @@ export function detectFormat(input: unknown): Format {
   if (Array.isArray(input.contents)) return "gemini";
   if (Array.isArray(input.input) || typeof input.input === "string") return "openai-responses";
   if (Array.isArray(input.messages)) {
-    // Chat Completions 본문에는 최상위 system 이 없고, Anthropic 본문에는 있다.
+    // Chat Completions bodies have no top-level system; Anthropic bodies do.
     const hint: Format | null = "system" in input ? "anthropic" : null;
     return detectList(input.messages, hint);
   }

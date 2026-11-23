@@ -1,6 +1,6 @@
 // OpenAI Chat Completions `messages`.
-// 호출: assistant 메시지의 tool_calls[] / 결과: role "tool" 메시지(tool_call_id).
-// 규칙: tool 메시지는 tool_calls 를 가진 assistant 바로 뒤에 연속으로 와야 한다.
+// Calls: tool_calls[] of an assistant message / results: messages with role "tool" (tool_call_id).
+// Rule: tool messages must follow, contiguously, right after the assistant message that has tool_calls.
 import type { Adapter, Msg, Part } from "../types.js";
 import { isObject, str } from "../util.js";
 
@@ -27,7 +27,7 @@ export const openaiChat: Adapter = {
     }
     if (role === "user") return { side: "user", parts: [], node, atomic: false, dirty: false };
     if (role === "tool") {
-      // tool 메시지는 그 자체가 결과 하나다(원자 메시지).
+      // A tool message is a single result by itself (an atomic message).
       const part: Part = { kind: "result", id: str(node.tool_call_id), node };
       return { side: "result", parts: [part], node, atomic: true, dirty: false };
     }
@@ -45,7 +45,7 @@ export const openaiChat: Adapter = {
 
   write(msg) {
     if (!isObject(msg.node) || msg.side !== "model") return;
-    // 호출을 모두 지웠으면 빈 tool_calls 배열을 남기지 않는다(제공자가 [] 를 거절한다).
+    // If all calls were removed, do not leave an empty tool_calls array (providers reject []).
     if (msg.parts.length === 0) delete msg.node.tool_calls;
     else msg.node.tool_calls = msg.parts.map((p) => p.node);
   },
@@ -62,7 +62,7 @@ export const openaiChat: Adapter = {
     if (msg.side !== "model" || !isObject(msg.node)) return false;
     if (msg.parts.length > 0) return false;
     const n = msg.node;
-    // refusal·audio·function_call 이 있으면 내용이 있는 메시지다.
+    // A message with refusal, audio or function_call has content.
     if (n.refusal || n.audio || n.function_call) return false;
     return isEmptyContent(n.content);
   },
@@ -85,7 +85,7 @@ export const openaiChat: Adapter = {
   },
 
   merge() {
-    // OpenAI Chat 은 같은 역할이 이어져도 받으므로 합치지 않는다.
+    // OpenAI Chat accepts consecutive messages with the same role, so they are not merged.
   },
 
   roleOf(msg) {

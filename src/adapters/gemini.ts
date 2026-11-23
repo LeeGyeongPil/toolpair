@@ -1,13 +1,13 @@
 // Gemini `contents`.
-// 호출: model 턴의 functionCall 부분 / 결과: 바로 다음 user(또는 function) 턴의 functionResponse 부분.
-// 규칙: 호출 턴 바로 뒤 응답 턴에 호출 개수만큼 응답이 있어야 한다.
-// id 가 없는 경우가 많아, 없으면 "이름@메시지.부분" 위치 id 를 만들고 응답은 이름 순서로 짝을 맞춘다.
+// Calls: functionCall parts of a model turn / results: functionResponse parts of the next user (or function) turn.
+// Rule: the response turn right after a call turn must hold as many responses as there are calls.
+// ids are often missing; if so a positional id "name@message.part" is made and responses are paired with calls by name order.
 import type { Adapter, Msg, Part } from "../types.js";
 import { isObject, str } from "../util.js";
 
 function sideOf(role: unknown): Msg["side"] {
   if (role === "model") return "model";
-  // role 을 생략하면 user 로 본다. 예전 Vertex 형식의 "function" 역할도 응답 턴이다.
+  // If role is omitted it counts as user. The legacy Vertex "function" role is also a response turn.
   if (role === undefined || role === "user" || role === "function") return "user";
   return "other";
 }
@@ -32,7 +32,7 @@ export const gemini: Adapter = {
         return { kind: "call", id, name, node: part };
       }
       if (side === "user" && isObject(part.functionResponse)) {
-        // id 가 없으면 resolveGeminiIds 가 이름으로 짝을 찾아 채운다.
+        // If there is no id, resolveGeminiIds fills it in by pairing with a call by name.
         return { kind: "result", id: str(part.functionResponse.id), name: str(part.functionResponse.name), node: part };
       }
       if (part.thought === true) return { kind: "thinking", node: part };
@@ -69,7 +69,7 @@ export const gemini: Adapter = {
   makeResult(call, text): Part {
     const callNode = isObject(call.node) && isObject(call.node.functionCall) ? call.node.functionCall : {};
     const explicitId = str(callNode.id);
-    // Gemini 문서: response 의 "error" 키는 오류 내용, "output" 키는 정상 출력.
+    // Gemini docs: the "error" key of response holds the error, the "output" key holds normal output.
     const functionResponse: Record<string, unknown> = { name: call.name ?? "", response: { error: text } };
     if (explicitId) functionResponse.id = explicitId;
     return { kind: "result", id: call.id ?? "", name: call.name ?? "", node: { functionResponse } };
@@ -91,12 +91,12 @@ export const gemini: Adapter = {
 };
 
 /**
- * id 없는 functionResponse 를 이름으로 호출과 짝짓는다. 두 단계로 한다.
- *  1) id 를 가진 응답이 먼저 같은 id·이름의 호출(응답보다 앞, 가장 가까운 것)을 차지한다.
- *  2) id 없는 응답은 남은 호출 가운데 같은 이름을 고른다: 가장 가까운 model 턴의 "첫" 호출.
- * 1)을 먼저 해야 id 없는 응답이 다른 응답의 호출을 가로채지 않는다. 같은 턴 안에서는
- * 응답 순서 = 호출 순서로 짝지어지므로, 수리할 때도 응답을 기존 응답들 "뒤"에 넣는다.
- * 짝이 없으면 응답 자신의 위치 id 를 붙여 고아 결과로 보고되게 한다.
+ * Pairs id-less functionResponses with calls by name, in two passes.
+ *  1) Responses that have an id first claim the call with the same id and name (before the response, nearest one).
+ *  2) An id-less response picks, among the remaining calls, one with the same name: the "first" call of the nearest model turn.
+ * Doing 1) first keeps an id-less response from stealing another response's call. Within one turn,
+ * responses pair up in call order, so repair also inserts a response "after" the existing responses.
+ * If there is no match, the response gets its own positional id so it is reported as an orphan result.
  */
 export function resolveGeminiIds(msgs: Msg[]): void {
   const claimed = new Set<Part>();
@@ -110,24 +110,24 @@ export function resolveGeminiIds(msgs: Msg[]): void {
   });
   const sameName = (a: Part, b: Part) => !a.name || !b.name || a.name === b.name;
 
-  // 1) id 를 가진 응답.
+  // 1) Responses that have an id.
   for (const r of responses) {
     if (!r.part.id) continue;
     let best: { m: number; part: Part } | undefined;
     for (const c of calls) {
       if (c.m >= r.m || claimed.has(c.part) || c.part.id !== r.part.id || !sameName(c.part, r.part)) continue;
-      best = c; // 앞에서부터 훑으므로 마지막으로 남는 것이 가장 가까운 호출.
+      best = c; // Scanning from the front, the last one left is the nearest call.
     }
     if (best) claimed.add(best.part);
   }
 
-  // 2) id 없는 응답.
+  // 2) Responses without an id.
   for (const r of responses) {
     if (r.part.id) continue;
     let best: { m: number; part: Part } | undefined;
     for (const c of calls) {
       if (c.m >= r.m || claimed.has(c.part) || c.part.name !== r.part.name) continue;
-      // 더 가까운(뒤쪽) model 턴을 고르고, 같은 턴에서는 앞의 호출을 고른다.
+      // Prefer the nearer (later) model turn; within the same turn, prefer the earlier call.
       if (!best || c.m > best.m) best = c;
     }
     if (best) {

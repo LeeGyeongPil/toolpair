@@ -1,7 +1,7 @@
-// OpenAI Responses API `input` 항목.
-// 호출: { type: "function_call", call_id } / 결과: { type: "function_call_output", call_id }.
-// custom_tool_call / custom_tool_call_output 도 같은 방식으로 짝을 맞춘다.
-// reasoning 항목은 바로 뒤에 모델 출력 항목(호출·assistant 메시지)이 있어야 한다.
+// Items of the OpenAI Responses API `input`.
+// Calls: { type: "function_call", call_id } / results: { type: "function_call_output", call_id }.
+// custom_tool_call / custom_tool_call_output are paired the same way.
+// A reasoning item must be followed right away by a model output item (a call or an assistant message).
 import type { Adapter, Msg, Part } from "../types.js";
 import { isObject, str } from "../util.js";
 
@@ -11,7 +11,7 @@ const CALL_TYPES: Record<string, string> = {
 };
 const OUTPUT_TYPES = new Set(Object.values(CALL_TYPES));
 
-/** role 을 가진 메시지 항목인가(type 이 없거나 "message"). */
+/** Is this a message item with a role (type is missing or "message")? */
 function isMessageItem(node: Record<string, unknown>): boolean {
   return typeof node.role === "string" && (node.type === undefined || node.type === "message");
 }
@@ -20,7 +20,7 @@ export const openaiResponses: Adapter = {
   format: "openai-responses",
   listKey: "input",
   slotKind: "result-messages",
-  // Responses 는 같은 턴 안이면 호출·결과가 섞여도 받는다. 턴을 넘긴 결과는 근거가 약해 경고로 둔다.
+  // Responses accepts calls and results mixed within the same turn. A result across turns has weak grounds, so it is only a warning.
   adjacencySeverity: "warning",
   resultsFirst: false,
   mergeSameRole: false,
@@ -42,12 +42,12 @@ export const openaiResponses: Adapter = {
       const side = role === "user" ? "user" : role === "assistant" ? "model" : "system";
       return one(side, { kind: "content", node });
     }
-    // web_search_call 처럼 스스로 완결된 모델 출력 항목.
+    // A self-contained model output item such as web_search_call.
     return one("model", { kind: "content", node });
   },
 
   write() {
-    // 모든 항목이 원자 메시지라 다시 쓸 내용이 없다.
+    // Every item is an atomic message, so there is nothing to rewrite.
   },
 
   partSuffix() {
@@ -55,13 +55,13 @@ export const openaiResponses: Adapter = {
   },
 
   isSlotBoundary(msg) {
-    // role 을 가진 메시지(user·system·developer·assistant)가 오면 그 턴의 호출 슬롯이 닫힌다.
+    // A message with a role (user, system, developer, assistant) closes the call slot of that turn.
     return isObject(msg.node) && isMessageItem(msg.node);
   },
 
   isEmpty(msg, next) {
-    // 호출을 지운 뒤 홀로 남은 reasoning 항목: 제공자가
-    // "reasoning was provided without its required following item" 으로 거절한다.
+    // A reasoning item left alone after its call was removed: the provider
+    // rejects it with "reasoning was provided without its required following item".
     if (msg.parts[0]?.kind !== "thinking") return false;
     if (!next) return true;
     return !(next.side === "model" && next.parts[0]?.kind !== "thinking");
@@ -86,7 +86,7 @@ export const openaiResponses: Adapter = {
   },
 
   merge() {
-    // 합치지 않는다.
+    // Do not merge.
   },
 
   roleOf(msg) {

@@ -1,10 +1,10 @@
 // Anthropic Messages API `messages`.
-// 호출: assistant content 의 tool_use 블록 / 결과: user content 의 tool_result 블록(tool_use_id).
-// 규칙: tool_result 는 "바로 다음" user 메시지에, 그 content 의 "맨 앞"에 와야 한다.
+// Calls: tool_use blocks in assistant content / results: tool_result blocks (tool_use_id) in user content.
+// Rule: a tool_result must be in the "next" user message, at the "very start" of its content.
 import type { Adapter, Msg, Part } from "../types.js";
 import { isObject, str } from "../util.js";
 
-/** content(문자열·블록 배열·null)를 조각 목록으로. 문자열은 text 블록 하나로 본다. */
+/** content (string, block array or null) as a list of parts. A string counts as a single text block. */
 function readBlocks(content: unknown, side: "user" | "model"): Part[] {
   if (typeof content === "string") {
     return content.length === 0 ? [] : [{ kind: "content", node: { type: "text", text: content } }];
@@ -41,7 +41,7 @@ export const anthropic: Adapter = {
   },
 
   write(msg) {
-    // 조각이 바뀐 메시지만 블록 배열로 다시 쓴다(안 바뀐 문자열 content 는 그대로 남는다).
+    // Rewrite only messages whose parts changed as a block array (unchanged string content stays as is).
     if (isObject(msg.node)) msg.node.content = msg.parts.map((p) => p.node);
   },
 
@@ -55,7 +55,7 @@ export const anthropic: Adapter = {
 
   isEmpty(msg) {
     if (msg.side !== "user" && msg.side !== "model") return false;
-    // 빈 content, 또는 thinking 블록만 남은 메시지(도구 블록을 지운 뒤 흔히 생긴다).
+    // Empty content, or a message left with only thinking blocks (common after removing tool blocks).
     return msg.parts.every((p) => p.kind === "thinking");
   },
 
@@ -68,7 +68,7 @@ export const anthropic: Adapter = {
   },
 
   makeResult(call, text): Part {
-    // 취소된 호출이므로 is_error 로 표시해 모델이 성공한 결과로 오해하지 않게 한다.
+    // Cancelled call, so mark it is_error so the model does not mistake it for a successful result.
     const node = { type: "tool_result", tool_use_id: call.id ?? "", content: text, is_error: true };
     return { kind: "result", id: call.id ?? "", node };
   },

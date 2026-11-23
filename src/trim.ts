@@ -1,17 +1,17 @@
-// 짝 보존 자르기: 먼저 repair 로 짝을 맞춘 뒤, "호출 + 그 결과들"을 쪼갤 수 없는 단위로 묶어
-// 뒤에서부터 예산만큼 채운다. 남는 창은 진짜 user 턴으로 시작하게 맞춘다.
-// 결과는 언제나 validate 를 통과한다. 예산이 너무 작으면 overBudget: true 로 알린다.
+// Pair-preserving trim: first fix pairs with repair, then group "a call + its results" into indivisible units
+// and fill the budget from the back. The remaining window is adjusted to start with a real user turn.
+// The result always passes validate. If the budget is too small it reports overBudget: true.
 import { InvalidInputError } from "./errors.js";
 import { load, save } from "./ir.js";
 import { repairDoc } from "./repair.js";
 import { defaultCountTokens } from "./tokens.js";
 import type { Change, Msg, TrimOptions, TrimResult } from "./types.js";
 
-/** 자르기 단위: 메시지 위치 목록과 토큰 합. */
+/** Trim unit: a list of message positions and their token total. */
 interface Unit {
   idx: number[];
   tokens: number;
-  /** 진짜 user 턴 메시지 하나로 된 단위(창을 여는 데 쓸 수 있다). */
+  /** A unit made of a single real user turn message (can be used to open the window). */
   userTurn: boolean;
 }
 
@@ -24,11 +24,11 @@ export function trimToBudget<T>(input: T, opts: TrimOptions): TrimResult<T> {
   const pinSystem = opts.pin?.system ?? true;
   const pinFirstUser = opts.pin?.firstUser ?? true;
 
-  // 1) 짝부터 맞춘다. 깨진 기록을 자르면 깨진 조각이 남기 때문이다.
+  // 1) Fix pairs first. Trimming a broken history would leave broken pieces.
   const doc = load(input, opts.format, true);
   const changes: Change[] = [];
   repairDoc(doc, {}, changes);
-  save(doc); // 수리한 내용을 노드에 써 두어야 토큰을 정확히 센다.
+  save(doc); // The repaired content must be written to the nodes so tokens are counted exactly.
   const { msgs, adapter } = doc;
 
   const tokensOf = (msg: Msg): number => {
@@ -38,13 +38,13 @@ export function trimToBudget<T>(input: T, opts: TrimOptions): TrimResult<T> {
   };
   const cost = msgs.map(tokensOf);
 
-  // 2) 고정 메시지: 맨 앞의 system/developer 메시지들, 첫 진짜 user 메시지.
+  // 2) Pinned messages: the leading system/developer messages and the first real user message.
   const pinned = new Set<number>();
   if (pinSystem) for (let i = 0; i < msgs.length && msgs[i]!.side === "system"; i++) pinned.add(i);
   const firstUser = msgs.findIndex((m) => adapter.isUserTurn(m));
   if (pinFirstUser && firstUser >= 0) pinned.add(firstUser);
 
-  // 3) 나머지를 원자 단위로 묶는다: 열린 호출이 있는 동안(또는 reasoning 처럼 다음과 붙어야 하면) 같은 단위.
+  // 3) Group the rest into atomic units: one unit while a call is open (or while it must stick to the next item, like reasoning).
   const units: Unit[] = [];
   let current: Unit | null = null;
   const open = new Set<string>();
@@ -68,7 +68,7 @@ export function trimToBudget<T>(input: T, opts: TrimOptions): TrimResult<T> {
     glue = adapter.gluesToNext(msg);
   });
 
-  // 4) 뒤에서부터 채운다. 마지막 단위(가장 최근 메시지)는 예산을 넘어도 남긴다.
+  // 4) Fill from the back. The last unit (the most recent message) is kept even if it exceeds the budget.
   let used = [...pinned].reduce((sum, i) => sum + cost[i]!, 0);
   let start = units.length;
   for (let k = units.length - 1; k >= 0; k--) {
@@ -78,14 +78,14 @@ export function trimToBudget<T>(input: T, opts: TrimOptions): TrimResult<T> {
     start = k;
   }
 
-  // 5) 창이 진짜 user 턴으로 시작하게 맞춘다. 창 첫 단위가 모델 출력이면, 그 턴을 연 user 메시지를
-  //    함께 남기거나(예산이 되면) 창 첫 단위를 버린다.
+  // 5) Make the window start with a real user turn. If the first unit of the window is model output, either keep the user message that opened that turn
+  //    (if the budget allows) or drop the first unit of the window.
   let opener = -1;
   while (start > 0 && start < units.length && !units[start]!.userTurn) {
     const firstMsg = units[start]!.idx[0]!;
     let o = start - 1;
     while (o >= 0 && !units[o]!.userTurn) o--;
-    // 고정해 둔 첫 user 메시지가 바로 이 턴을 연 메시지라면 그대로 둔다.
+    // If the pinned first user message is the very one that opened this turn, leave it as is.
     const pinnedOpens = pinned.has(firstUser) && firstUser < firstMsg && (o < 0 || units[o]!.idx[0]! < firstUser);
     if (pinnedOpens) break;
     const isLast = start === units.length - 1;
@@ -94,12 +94,12 @@ export function trimToBudget<T>(input: T, opts: TrimOptions): TrimResult<T> {
       used += units[o]!.tokens;
       break;
     }
-    if (isLast) break; // 여는 user 턴이 아예 없으면 마지막 단위만이라도 남긴다.
+    if (isLast) break; // If there is no opening user turn at all, keep at least the last unit.
     used -= units[start]!.tokens;
     start++;
   }
 
-  // 6) 남길 메시지를 원래 순서대로 모은다.
+  // 6) Collect the messages to keep in their original order.
   const keep = new Set<number>(pinned);
   for (const u of units.slice(start)) for (const i of u.idx) keep.add(i);
   if (opener >= 0) for (const i of units[opener]!.idx) keep.add(i);

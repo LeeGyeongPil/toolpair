@@ -47,6 +47,23 @@ try {
     if (!files.includes(must)) throw new Error(`tarball is missing ${must}`);
   }
 
+  // 공개 타입 선언(.d.ts)에 한글이 남아 있으면 파일:줄을 출력하고 실패한다(영어 사용자의 IDE 호버용).
+  const hangul = /[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7A3]/;
+  const dtsFiles = files.filter((f) => f.startsWith("dist/types/") && f.endsWith(".d.ts"));
+  if (dtsFiles.length === 0) throw new Error("tarball has no .d.ts files under dist/types");
+  const hits = [];
+  for (const f of dtsFiles) {
+    const text = execFileSync("tar", ["-xzOf", tarball, `package/${f}`], { encoding: "utf8" });
+    text.split(/\r?\n/).forEach((line, i) => {
+      if (hangul.test(line)) hits.push(`${f}:${i + 1}: ${line.trim()}`);
+    });
+  }
+  if (hits.length > 0) {
+    console.error(`Korean text found in packed type declarations (write the JSDoc in English):\n${hits.join("\n")}`);
+    process.exit(1);
+  }
+  console.log(`dts ok (${dtsFiles.length} declaration files, no Hangul)`);
+
   // 빈 프로젝트에 tarball 만 설치한다(의존성이 없으니 네트워크가 필요 없다).
   const app = join(work, "app");
   execFileSync(process.execPath, ["-e", `require("fs").mkdirSync(${JSON.stringify(app)})`]);

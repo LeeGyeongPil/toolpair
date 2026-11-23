@@ -1,4 +1,4 @@
-// toolpair 공개 API. 런타임 의존성 0, node: 모듈 미사용(브라우저에서도 돈다).
+// toolpair public API. Zero runtime dependencies, no node: modules (also runs in browsers).
 export { detectFormat } from "./detect.js";
 export { validate, RULES } from "./validate.js";
 export { repair, DEFAULT_SYNTHETIC_RESULT } from "./repair.js";
