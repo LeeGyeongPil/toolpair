@@ -23,19 +23,19 @@ LLM 대화 기록을 검증·수리하고 토큰 예산에 맞춰 자르면서, 
 
 ## 설치
 
-GitHub에서 바로(지금 가능, `prepare` 스크립트가 `dist/`를 만듭니다):
-
-```bash
-npm install github:LeeGyeongPil/toolpair
-```
-
-npm 레지스트리에 게시된 뒤에는:
+npm 레지스트리에서 설치합니다:
 
 ```bash
 npm install toolpair
 ```
 
-Node.js 20 이상이 필요합니다(`brew install node` 또는 `nvm install 20`, 최소 리눅스 이미지에서는 Node.js와 `git`을 설치). 핵심 기능은 브라우저에서도 동작합니다. 런타임 의존성은 없습니다.
+개발 중인 최신 소스가 필요하면 GitHub에서 설치합니다(`prepare` 스크립트가 `dist/`를 만듭니다):
+
+```bash
+npm install github:LeeGyeongPil/toolpair
+```
+
+Node.js 20 이상이 필요합니다(`brew install node` 또는 `nvm install 20`, 최소 리눅스 이미지에서는 Node.js를 설치, `git`은 GitHub 설치에만 필요). 핵심 기능은 브라우저에서도 동작합니다. 런타임 의존성은 없습니다.
 
 ## 빠르게 시작하기
 

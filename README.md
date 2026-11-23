@@ -23,19 +23,19 @@ A provider answers with HTTP 400 when a tool call and its result do not line up.
 
 ## Install
 
-From GitHub (works now; the `prepare` script builds `dist/`):
-
-```bash
-npm install github:LeeGyeongPil/toolpair
-```
-
-From the npm registry, once the package is published there:
+From the npm registry:
 
 ```bash
 npm install toolpair
 ```
 
-Requires Node.js 20+ (`brew install node`, or `nvm install 20`; on a minimal Linux image install Node.js and `git`). The core also runs in browsers. There are no runtime dependencies.
+If you need the latest development source, install from GitHub instead (the `prepare` script builds `dist/`):
+
+```bash
+npm install github:LeeGyeongPil/toolpair
+```
+
+Requires Node.js 20+ (`brew install node`, or `nvm install 20`; on a minimal Linux image install Node.js; `git` is needed only for the GitHub install). The core also runs in browsers. There are no runtime dependencies.
 
 ## Quick start
 

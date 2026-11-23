@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- Docs: the README now installs from npm by default; 0.1.2 is on npm (published 2026-11-14). Installing from GitHub remains documented as an alternative for the latest source.
+
 ## [0.1.2] - 2026-11-13
 
 ### Fixed
@@ -18,7 +24,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Known issues
 
-- The package is not on npm yet; install from GitHub (see the README).
 - With npm 11, running `npm pack` prints a `prepare` script warning; it is harmless.
 - Reading standard input has no regression test for the `EAGAIN` retry path, and empty input gives a generic error message.
 - The 0.1.0 known issues (Korean demo rule texts, Korean in type declarations and example comments) remain.
