@@ -5,6 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-11-24
+
+### Changed
+
+- Type declarations are now documented in English: the JSDoc and comments that ship in `dist/types` were translated, with no change to runtime behavior or signatures. This resolves the "Korean in type declarations" known issue listed under 0.1.0-0.1.2 (Korean demo rule texts and Korean example comments remain).
+
+### Added
+
+- `npm run smoke:pack` now fails, printing `file:line`, if any packed `.d.ts` file contains Korean (Hangul) characters.
+
 ## [0.1.3] - 2026-11-24
 
 ### Changed

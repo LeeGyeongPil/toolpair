@@ -268,7 +268,7 @@ Limits: toolpair only looks at the local array. It does not recover thought sign
 npm install
 npm run typecheck
 npm test            # builds, then runs 178 tests
-npm run smoke:pack  # installs the packed tarball in a temp folder and imports it
+npm run smoke:pack  # installs the packed tarball in a temp folder, imports it, and checks .d.ts files have no Korean text
 ```
 
 ## License

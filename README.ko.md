@@ -268,7 +268,7 @@ toolpair의 차이는 원시 제공자 형식 4종을 한 규칙 체계로 다�
 npm install
 npm run typecheck
 npm test            # 빌드 후 178개 테스트 실행
-npm run smoke:pack  # 묶은 tarball을 임시 폴더에 설치해 import 확인
+npm run smoke:pack  # 묶은 tarball을 임시 폴더에 설치해 import 확인, .d.ts에 한글이 없는지 검사
 ```
 
 ## 라이선스
